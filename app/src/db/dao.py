@@ -116,56 +116,196 @@ def update_investor_status(id: int, status: str) -> None:
     Account DAO functions
 '''
 def get_all_accounts() -> list[Account]:
-    # Code goes here
-    pass
+    '''
+    Returns an Account object given an account_number [R]
+'''
+    
+    cnx = get_cnx()
+    cur = cnx.cusor(Dictionary=True)
+    cur.execute('select account_number, investor_id, balance from Account;')
+    rows = cur.fetchall()
+    if len(rows) == 0:
+        cxn.close()
+        return[]
+    accounts = []
+    for row in rows:
+        accounts.append(
+            Account(row['account_number'], row['investor_id'], row['balance'])
+    cxn.close()
+    return accounts
+        )     
 
 def get_account_by_id(id: int) -> Account:
-    # Code goes here
-    pass
+        '''
+    Returns a list of account_numbers [R]
+'''
+    db_cnx: MySQLConnection = get_cnx()
+    cursor = db_cnx.cursor(dictionary=True) # always pass dictionary = True
+    sql: str = 'select * from account where account_number = %s'
+    cursor.execute(sql, (account_number,))
+        if cursor.rowcount == 0:
+            return None
+        else:
+            row = cursor.fetchone()
+            account = Account(row['account_number'], row['investor_id'], row['balance'])
+            return account     
 
-def get_accounts_by_investor_id(id: int) -> list[Account]:
-    # Code goes here
-    pass
+def get_accounts_by_investor_id(investor_id: int) ->  list[Account]:
 
-def delete_account(id: int) -> None:
-    # Code goes here
-    pass
+    '''
+        Returns an account object given an investor ID [R]
+    '''
+    db_cnx: MySQLConnection = get_cnx()
+    cursor = db_cnx.cursor(dictionary=True) # always pass dictionary = True
+    sql: str = 'select * from account where investor_id = %s'
+    cursor.execute(sql, (investor_id,))
+    if cursor.rowcount == 0:
+        return None
+    else:
+        row = cursor.fetchone()
+        account = Account(row['account_number'], row['investor_id'], row['balance'])
+        return account 
 
-def update_acct_balance(id: int, bal: float) -> None:
-    # Code goes here
-    pass
+
+
+
+
+
+
+
+def delete_account(accont_number: int) -> None:
+    '''
+        Delete an account given an account_number [D]
+    '''
+    db_cnx = get_cnx()
+    cursor = db_cnx.cursor()
+    sql = 'delete from account where account_number = %s'
+    cursor.execute(sql, (account_number,))
+    db_cnx.commit() # inserts, updates, and deletes
+    db_cnx.close()
+    
+
+def update_acct_balance(account_number: int, balance: float) -> None:
+    '''
+        Updates the account balance [U]
+    '''
+    db_cnx = get_cnx()
+    cursor = db_cnx.cursor()
+    sql = 'update account set balance = %s where account_number = %s'
+    cursor.execute(sql, (account_number, balance))
+    db_cnx.commit()
+    db_cnx.close()
+    
 
 def create_account(account: Account) -> None:
-    # Code goes here
-    pass
+    '''
+    Create a new account in the db given an account object [C]
+'''
+    db_cnx = get_cnx()
+    cursor = db_cnx.cursor()
+    sql = 'insert into account (investor_id, balance) values (%s, %s)'
+    cursor.execute(sql, (account.investor_id, account.balance))
+    db_cnx.commit()
+    db_cnx.close()
 
 '''
     Portfolio DAO functions
 '''
 def get_all_portfolios() -> list[Portfolio]:
-    # code goes here
-    pass
+    '''
+        Get list of all portfolios [R]
+    '''
+    portfolios: list[Portfolio] = []
+    db_cnx: MySQLConnection = get_cnx()
+    cursor = db_cnx.cursor(dictionary=True) # always pass dictionary = True
+    sql: str = 'select * from portfolio'
+    cursor.execute(sql)
+    results: list[dict] = cursor.fetchall()
+    for row in results:
+        investors.append(Portfolio(row['portfolio_id'], row['account_number'], row['ticker'], row['quantity'], row['purchase_price']))
+    db_cnx.close()
+    return portfolios
+    
 
-def get_porfolios_by_acct_id(acct_id: int) -> list[Portfolio]:
-    # code goes here
-    pass
+def get_porfolios_by_acct_id(account_number: int) -> list[Portfolio]:
+    '''
+        Returns an account_number object given an account_number [R]
+    '''
+    db_cnx: MySQLConnection = get_cnx()
+    cursor = db_cnx.cursor(dictionary=True) # always pass dictionary = Tru
+    sql: str = 'select * from portfolio where account_number = %s'
+    cursor.execute(sql, (account_number,))
+    if cursor.rowcount == 0:
+        return None
+    else:
+        row = cursor.fetchone()
+        portfolio = Portfolio(row['portfolio_id'], row['account_number'], row['ticker'], row['quantity'], row['purchase_price'])
+        db_cnx.close()
+        return portfolio
+        
+ 
+    
 
-def get_portfolios_by_investor_id(investor_id: int) -> list[Portfolio]:
-    # code goes here
-    pass
+def get_portfolios_by_portfolio_id(portfolio_id: int) -> list[Portfolio]:
+    '''
+        Returns an portfolio_id object given an account_number ID [R]
+    '''
+    db_cnx: MySQLConnection = get_cnx()
+    cursor = db_cnx.cursor(dictionary=True) # always pass dictionary = Tru
+    sql: str = 'select * from portfolio where portfolio_id = %s'
+    cursor.execute(sql, (portfolio_id,))
+    if cursor.rowcount == 0:
+        return None
+            db_cnx.close()
+    else:
+        row = cursor.fetchone()
+        portfolio = Portfolio(row['portfolio_id'], row['account_number'], row['ticker'], row['quantity'], row['purchase_price'])
+        return portfolio
+        db_cnx.close()
+ 
+    
 
-def delete_portfolio(id: int) -> None:
-    # code goes here
-    pass
+
+def delete_portfolio(portfolio_id: int) -> None:
+    '''
+        Delete an portfolio given an portfolio_id [D]
+    '''
+    db_cnx = get_cnx()
+    cursor = db_cnx.cursor()
+    sql = 'delete from portfolio where portfolio_id = %s'
+    cursor.execute(sql, (portfolio_id,))
+    db_cnx.commit() # inserts, updates, and deletes
+    db_cnx.close()
+    
 
 def buy_stock(ticker: str, price: float, quantity: int) -> None:
-    # code goes here
-    pass
+    '''
+    Create/Buy Stock in the db given an account_number object [C]
+'''
+    db_cnx = get_cnx()
+    cursor = db_cnx.cursor()
+    sql = 'insert into account (ticker, purchase_price, quantity) values (%s, %s)'
+    cursor.execute(sql, (ticker, purchase_price, quantity ))
+    db_cnx.commit()
+    db_cnx.close()
+
 
 def sell_stock(ticket: str, quantity: int, sale_price: float) -> None:
+    '''
+        Updates the quantity and account balance (sell stock) [U]
+    '''
+    db_cnx = get_cnx()
+    cursor = db_cnx.cursor()
+    sql2 = 'select account_number, ticker, account.balance, (quantity - (Select(quantity from portfoilo)) as cur_quantity from portfolio where account_number = %s  and ticker = %s'
+    sql = 'update portfolio set quantity = cur_quantity where account_number = %s'
+    aql3 = 'update account set balance = new_balance where account_number = %s' 
+    cursor.execute(sql, (account_number, ticker, quantity, account.balance))
+    db_cnx.commit()
+    db_cnx.close()   
+
     # 1. update quantity in portfolio table
     # 2. update the account balance:
     # Example: 10 APPL shares at $1/share with account balance $100
     # event: sale of 2 shares for $2/share
     # output: 8 APPLE shares at $1/share with account balance = 100 + 2 * (12 - 10) = $104
-    pass
+    

@@ -1,0 +1,51 @@
+Assignment two requirements:
+-------
+
+connect to db requirements:
+1. hostname: endpoint from AWS
+2. username/password:
+- 2.a: provide username/password that were created at the time of db creation
+- 2.b: create a new user on the database. call user: drbourji and password: admin123
+using the following statement: create user 'drbourji' identified by 'admin123'
+
+hostname + user + password
+================================
+host' : 'ftec6v99.cblyhbwvse3y.us-east-2.rds.amazonaws.com
+username' : 'admin',
+password' : 'ftec6v99',
+database' : 'BestTrade_schema'
+----
+
+======================================================
+Entity Relation Diagram (ERD)
+
+Three tables:
+1. investor table:
+- columns: id | name | status
+- constraints: id is a primary key
+
+2. account table: 
+- columns: account_number | investor_id | balance
+- constraints: 
+	- account_number is primary key
+	- investor_id is a foreign key that references the investor table using the id column.
+
+3. portfolio table
+- columns: account_number | ticker | quantity | purchase_price
+- constraints:
+	- account_number is a forign key that references the account table using the account_number column.
+==============================================================================================================
+
+Create the ERD: 
+Instructions to create ERD:
+1. Go to MySQL Workbench and connect to db using endpoint/username/pass
+2. Go to Database -> Reverse Engineer
+3. Select next all the way throughout the creation wizard
+4. once the digram is created. Go to File -> export -> PDF
+5. send PDF to me as part of assignment 2 requirements.
+
+----
+1. Implement missing functions in app/src/db/dao.py (https://github.com/FTEC-6v99/besttradef21/blob/main/app/src/db/dao.py) 
+2. Implement domain objects for the tables (e.g., see app/src/domain/Investor.py)
+NOTE: Make sure that you change the configurations in the config.py file in the root of your project directory to match 
+the parameters of your database.

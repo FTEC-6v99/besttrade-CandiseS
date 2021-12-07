@@ -120,35 +120,40 @@ def get_all_accounts() -> list[Account]:
     Returns an Account object given an account_number [R]
 '''
     
-    cnx = get_cnx()
-    cur = cnx.cusor(Dictionary=True)
+    db_cnx: MySQLConnection = get_cnx()
+    cur = db_cnx.cursor(Dictionary=True)
     cur.execute('select account_number, investor_id, balance from Account;')
     rows = cur.fetchall()
-    if len(rows) == 0:
-        cxn.close()
-        return[]
-    accounts = []
-    for row in rows:
-        accounts.append(
-            Account(row['account_number'], row['investor_id'], row['balance'])
-    cxn.close()
+    if cursor.rowcount == 0:
+        db_cnx.close()
+        accounts = []
+    else: 
+        accounts = []
+        rows = cursor.fetchall()
+        for row in rows:
+            accounts.append(row['account_number'], row['investor_id'], row['balance'])
+        db_cnx.close()
+   
     return accounts
-        )     
+
+###########
+
+              
 
 def get_account_by_id(id: int) -> Account:
-        '''
+    '''
     Returns a list of account_numbers [R]
 '''
     db_cnx: MySQLConnection = get_cnx()
     cursor = db_cnx.cursor(dictionary=True) # always pass dictionary = True
     sql: str = 'select * from account where account_number = %s'
     cursor.execute(sql, (account_number,))
-        if cursor.rowcount == 0:
-            return None
-        else:
-            row = cursor.fetchone()
-            account = Account(row['account_number'], row['investor_id'], row['balance'])
-            return account     
+    if cursor.rowcount == 0:
+        return None
+    else:
+        row = cursor.fetchone()
+        account = Account(row['account_number'], row['investor_id'], row['balance'])
+        return account     
 
 def get_accounts_by_investor_id(investor_id: int) ->  list[Account]:
 
@@ -255,8 +260,8 @@ def get_portfolios_by_portfolio_id(portfolio_id: int) -> list[Portfolio]:
     sql: str = 'select * from portfolio where portfolio_id = %s'
     cursor.execute(sql, (portfolio_id,))
     if cursor.rowcount == 0:
+        db_cnx.close()
         return None
-            db_cnx.close()
     else:
         row = cursor.fetchone()
         portfolio = Portfolio(row['portfolio_id'], row['account_number'], row['ticker'], row['quantity'], row['purchase_price'])

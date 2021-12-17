@@ -5,9 +5,9 @@ import app.src.db.dao as dao
 from app.src.domain.Account import Account
 
 
-accountbp = Blueprint('account', __name__, url_prefix="/account")
+accountbp = bp = Blueprint('account', __name__, url_prefix="/account")
 
-@accountbp.route('/get-all-accounts', methods = ['GET'])
+@bp.route('/get-all-accounts', methods = ['GET'])
 def get_all_accounts() -> Account:
 
     accounts: t.list[Account] = dao.get_all_accounts()

@@ -42,12 +42,9 @@ def get_investor_by_id(id: int) -> t.Optional[Investor]:
     cursor = db_cnx.cursor(dictionary=True) # always pass dictionary = True
     sql: str = 'select * from investor where id = %s'
     cursor.execute(sql, (id,))
-    if cursor.rowcount == 0:
-        return None
-    else:
-        row = cursor.fetchone()
-        investor = Investor(row['name'], row['status'], row['id'])
-        return investor 
+    row = cursor.fetchone()
+    investor = Investor(row['name'], row['status'], row['id'])
+    return investor 
 
 def get_investors_by_name(name: str) -> list[Investor]:
     '''

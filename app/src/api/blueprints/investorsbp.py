@@ -18,9 +18,21 @@ def get_investor_by_id(id: int)-> Investor:
         return 'Oops an error occured:' + str(e), 500
 @investorbp.route('/get-all-investors', methods=['GET'])
 def get_all_investors():
-    try:
-        investors = dao.get_all_investor()
-        return json.dumps(investor.__dict__ for investor in investors)
-    except Exception as e:
-        return 'Oops an error occured: ' + str(e), 500
+
+    investors: t.list[Investor] = dao.get_all_accounts()
+    if len(investors) == 0:
+        return json.dumps([])
+    else:
+        return json.dumps([investor.__dict__() for investor in investors])
+
+
+
+
+
+
+    # try:
+    #     investors = dao.get_all_investor()
+    #     return json.dumps(investor.__dict__ for investor in investors)
+    # except Exception as e:
+    #     return 'Oops an error occured: ' + str(e), 500
 

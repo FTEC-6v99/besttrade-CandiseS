@@ -116,21 +116,16 @@ def get_all_accounts() -> list[Account]:
     '''
     Returns an Account object given an account_number [R]
 '''
-    
+    accounts: list[Account] = []
     db_cnx: MySQLConnection = get_cnx()
-    cur = db_cnx.cursor(Dictionary=True)
-    cur.execute('select account_number, investor_id, balance from Account;')
-    rows = cur.fetchall()
-    if cursor.rowcount == 0:
-        db_cnx.close()
-        accounts = []
-    else: 
-        accounts = []
-        rows = cursor.fetchall()
-        for row in rows:
-            accounts.append(row['account_number'], row['investor_id'], row['balance'])
-        db_cnx.close()
-   
+    cur = db_cnx.cursor(dictionary=True)
+    sql: str = 'select * from account;'
+    cur.execute(sql)
+
+    results: list[dict] = cur.fetchall()
+    for row in results:
+        accounts.append(Account(row['account_number'], row['balance'], row['investor_id']))
+    db_cnx.close()
     return accounts
 
 ###########
@@ -175,7 +170,7 @@ def get_accounts_by_investor_id(investor_id: int) ->  list[Account]:
 
 
 
-def delete_account(accont_number: int) -> None:
+def delete_account(account_number: int) -> None:
     '''
         Delete an account given an account_number [D]
     '''
@@ -217,16 +212,31 @@ def get_all_portfolios() -> list[Portfolio]:
     '''
         Get list of all portfolios [R]
     '''
+
+    
     portfolios: list[Portfolio] = []
     db_cnx: MySQLConnection = get_cnx()
-    cursor = db_cnx.cursor(dictionary=True) # always pass dictionary = True
-    sql: str = 'select * from portfolio'
-    cursor.execute(sql)
-    results: list[dict] = cursor.fetchall()
+    cur = db_cnx.cursor(dictionary=True)
+    sql: str = 'select * from portfolio;'
+    cur.execute(sql)
+
+    results: list[dict] = cur.fetchall()
     for row in results:
-        investors.append(Portfolio(row['portfolio_id'], row['account_number'], row['ticker'], row['quantity'], row['purchase_price']))
+        portfolios.append(Portfolio(row['portfolio_id'], row['account_number'], row['ticker'], row['quantity'], row['purchase_price']))
     db_cnx.close()
     return portfolios
+
+
+    # portfolios: list[Portfolio] = []
+    # db_cnx: MySQLConnection = get_cnx()
+    # cursor = db_cnx.cursor(dictionary=True) # always pass dictionary = True
+    # sql: str = 'select * from portfolio'
+    # cursor.execute(sql)
+    # results: list[dict] = cursor.fetchall()
+    # for row in results:
+    #     portfolios.append(Portfolio(row['portfolio_id'], row['account_number'], row['ticker'], row['quantity'], row['purchase_price']))
+    # db_cnx.close()
+    # return portfolios
     
 
 def get_porfolios_by_acct_id(account_number: int) -> list[Portfolio]:

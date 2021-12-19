@@ -14,13 +14,12 @@ def get_all_accounts() -> Account:
     if len(accounts) == 0:
         return json.dumps([])
     else:
-        return json.dumps(accounts, default = lambda x: x.__dict__)
-    ####
-    try:
-	    account = dao.get_all_accounts(account_number)
-	    return json.dumps(account.__dict__)
-    except Exception as e:
-        return 500, "OOps there was a mistake!"
+        return json.dumps([account.__dict__() for account in accounts])    ####
+    #try:
+	#     account = dao.get_all_accounts(account_number)
+	#     return 200, json.dumps(account.__dict__)
+    # except Exception as e:
+    #     return 500, "OOps there was a mistake!"
     #try:
 	#    account = dao.get_all_accounts()
     #return json.dumps([]), 200
